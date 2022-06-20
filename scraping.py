@@ -8,6 +8,7 @@
 from splinter import Browser
 from bs4 import BeautifulSoup as soup
 from webdriver_manager.chrome import ChromeDriverManager
+import pandas as pd
 
 
 # In[2]:
@@ -73,7 +74,7 @@ browser.visit(url)
 'https://spaceimages-mars.com'
 
 
-# In[11]:
+# In[10]:
 
 
 # Find and click the full image button
@@ -81,7 +82,7 @@ full_image_elem = browser.find_by_tag('button')[1]
 full_image_elem.click()
 
 
-# In[12]:
+# In[11]:
 
 
 # Parse the resulting html with soup
@@ -89,7 +90,7 @@ html = browser.html
 img_soup = soup(html, 'html.parser')
 
 
-# In[13]:
+# In[12]:
 
 
 # Find the relative image url
@@ -97,7 +98,7 @@ img_url_rel = img_soup.find('img', class_='fancybox-image').get('src')
 img_url_rel
 
 
-# In[14]:
+# In[13]:
 
 
 # Use the base URL to create an absolute URL
@@ -105,7 +106,7 @@ img_url = f'https://spaceimages-mars.com/{img_url_rel}'
 img_url
 
 
-# In[15]:
+# In[14]:
 
 
 df = pd.read_html('https://galaxyfacts-mars.com')[0]
