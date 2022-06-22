@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
-
+# In[2]
 
 # Import Splinter and BeautifulSoup
 from splinter import Browser
@@ -11,14 +10,14 @@ from webdriver_manager.chrome import ChromeDriverManager
 import pandas as pd
 
 
-# In[2]:
+# In[3]:
 
 
 executable_path = {'executable_path': ChromeDriverManager().install()}
 browser = Browser('chrome', **executable_path, headless=False)
 
 
-# In[3]:
+# In[4]:
 
 
 # Visit the mars nasa news site
@@ -28,7 +27,7 @@ browser.visit(url)
 browser.is_element_present_by_css('div.list_text', wait_time=1)
 
 
-# In[4]:
+# In[5]:
 
 
 html = browser.html
@@ -36,13 +35,13 @@ news_soup = soup(html, 'html.parser')
 slide_elem = news_soup.select_one('div.list_text')
 
 
-# In[5]:
+# In[6]:
 
 
 slide_elem.find("div",class_="content_title")
 
 
-# In[6]:
+# In[7]:
 
 
 # Use the parent element to find the first `a` tag and save it as `news_title`
@@ -50,7 +49,7 @@ news_title = slide_elem.find('div', class_='content_title').get_text()
 news_title
 
 
-# In[7]:
+# In[8]:
 
 
 # Use the parent element to find the paragraph text
@@ -60,7 +59,7 @@ news_p
 
 # ### feadured Images
 
-# In[8]:
+# In[9]:
 
 
 # visit url
@@ -68,13 +67,13 @@ url ='https://spaceimages-mars.com'
 browser.visit(url)
 
 
-# In[9]:
+# In[10]:
 
 
 'https://spaceimages-mars.com'
 
 
-# In[10]:
+# In[11]:
 
 
 # Find and click the full image button
@@ -82,7 +81,7 @@ full_image_elem = browser.find_by_tag('button')[1]
 full_image_elem.click()
 
 
-# In[11]:
+# In[12]:
 
 
 # Parse the resulting html with soup
@@ -90,7 +89,7 @@ html = browser.html
 img_soup = soup(html, 'html.parser')
 
 
-# In[12]:
+# In[13]:
 
 
 # Find the relative image url
@@ -98,7 +97,7 @@ img_url_rel = img_soup.find('img', class_='fancybox-image').get('src')
 img_url_rel
 
 
-# In[13]:
+# In[14]:
 
 
 # Use the base URL to create an absolute URL
@@ -106,13 +105,25 @@ img_url = f'https://spaceimages-mars.com/{img_url_rel}'
 img_url
 
 
-# In[14]:
+# In[15]:
 
 
 df = pd.read_html('https://galaxyfacts-mars.com')[0]
 df.columns=['description', 'Mars', 'Earth']
 df.set_index('description', inplace=True)
 df
+
+
+# In[16]:
+
+
+df.to_html()
+
+
+# In[17]:
+
+
+browser.quit()
 
 
 # In[ ]:
