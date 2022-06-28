@@ -1,8 +1,9 @@
 # Import Splinter, BeautifulSoup, and Pandas
+from tkinter import BROWSE
+from turtle import pd
 from splinter import Browser
 from bs4 import BeautifulSoup as soup
 import datetime as dt
-import pandas as pd
 from webdriver_manager.chrome import ChromeDriverManager
 
 
@@ -32,7 +33,8 @@ def mars_news(browser):
 
     # Scrape Mars News
     # Visit the mars nasa news site
-    url = 'https://data-class-mars.s3.amazonaws.com/Mars/index.html'
+    
+    url = 'https://redplanetscience.com/'
     browser.visit(url)
 
     # Optional delay for loading the page
@@ -58,7 +60,7 @@ def mars_news(browser):
 
 def featured_image(browser):
     # Visit URL
-    url = 'https://data-class-jpl-space.s3.amazonaws.com/JPL_Space/index.html'
+    url = 'https://spaceimages-mars.com'
     browser.visit(url)
 
     # Find and click the full image button
@@ -78,7 +80,7 @@ def featured_image(browser):
         return None
 
     # Use the base url to create an absolute url
-    img_url = f'https://data-class-jpl-space.s3.amazonaws.com/JPL_Space/{img_url_rel}'
+    img_url =  f'https://spaceimages-mars.com/{img_url_rel}'
 
     return img_url
 
@@ -86,8 +88,7 @@ def mars_facts():
     # Add try/except for error handling
     try:
         # Use 'read_html' to scrape the facts table into a dataframe
-        df = pd.read_html('https://data-class-mars-facts.s3.amazonaws.com/Mars_Facts/index.html')[0]
-
+        df = pd.read_html('https://galaxyfacts-mars.com')[0]
     except BaseException:
         return None
 
@@ -100,16 +101,12 @@ def mars_facts():
 
 def hem_image(browser):
         # 1. Use browser to visit the URL 
-    url = 'https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars'
+    url = 'https://marshemispheres.com/'
     browser.visit(url)
     browser.is_element_present_by_css("ul.item_list li.slide", wait_time=1)
-    False
+ 
 
-
-    # In[18]:
-
-
-    # 2. Create a list to hold the images and titles.
+        # 2. Create a list to hold the images and titles.
     hemisphere_image_urls = []
     # 3. Write code to retrieve the image urls and titles for each hemisphere.
     # Parse the html with beautifulsoup
@@ -117,24 +114,28 @@ def hem_image(browser):
     hemi_soup = soup(html, 'html.parser')
 
     # Get the links for each of the 4 hemispheres
-    hemi_links = hemi_soup.find_all('h3')
+    hemisphere_links = browser.find_by_css("a.product-item img")
     # hemi_links
 
     # loop through each hemisphere link
-    for hemi in hemi_links:
+    for i in range(len(hemisphere_links )):
         # Navigate and click the link of the hemisphere
-        img_page = browser.find_by_text(hemi.text)
-        img_page.click()
-        html= browser.html
-        img_soup = soup(html, 'html.parser')
-        # Scrape the image link
-        img_url = 'https://astrogeology.usgs.gov/' + str(img_soup.find('img', class_='wide-image')['src'])
-        # Scrape the title
-        title = img_soup.find('h2', class_='title').text
-        # Define and append to the dictionary
+        hemisphere = {}
         
-        hemi_dict = {'img_url': img_url,'title': title}
-        hemisphere_image_urls.append(hemi_dict)
+        # We have to find the elements on each loop to avoid a stale element exception
+        browser.find_by_css('a.product-item img')[i].click()
+        
+        # Next, we find the Sample image anchor tag and extract the href
+        sample_elem = browser.links.find_by_text('Sample').first
+        hemisphere['img_url'] = sample_elem['href']
+        
+        # Get Hemisphere title
+        hemisphere['title'] = browser.find_by_css('h2.title').text
+        
+        # Append hemisphere object to list
+        hemisphere_image_urls.append(hemisphere)
+        
+        # Finally, we navigate backwards
         browser.back()
     return hemisphere_image_urls
 
